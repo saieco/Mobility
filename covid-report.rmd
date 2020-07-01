@@ -1,0 +1,68 @@
+---
+title: <center>COVID-19 Report</center>
+author: <center>SAI Law & Economics</center>
+date: <center>`r Sys.setlocale('LC_TIME','English'); format(Sys.time(),'%d %B, %Y')`</center>
+output:
+   html_document:
+      toc: true
+      toc_depth: 2
+      toc_float:
+         collapse: false
+         smooth_scroll: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE)
+
+##### libraries #####
+
+library(tidyverse)
+
+##### data import #####
+
+covid_data <- read_csv('inputs/owid-covid-data.csv')
+
+mobility_raw_data <- read_csv('inputs/global_mobility_report.csv')
+
+##### Colors #####
+
+colors_pal <- c('#004170','#098d9c','#cc003a','#b2d600','#ffcc00','#00c954','#00bf9f','#00a9bf','#6f00bf','#b02c88')
+
+```
+
+<br>
+
+Sources:
+
+* Our World in Data. Data collected, aggregated, and documented by Diana Beltekian, Daniel Gavrilov, Charlie Giattino, Joe Hasell, Bobbie Macdonald, Edouard Mathieu, Esteban Ortiz-Ospina, Hannah Ritchie, Max Roser. https://github.com/owid/covid-19-data/tree/master/public/data. Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%d %B, %Y')`.
+
+* Google LLC "Google COVID-19 Community Mobility Reports". https://www.google.com/covid19/mobility/ Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%d %B, %Y')`.
+
+# Intro
+
+[Text]
+
+# COVID-19 
+
+[Text]
+
+## Subsection 1
+
+[Text]
+
+## Subsection
+
+[Text]
+
+# Global Mobility
+
+[Text]
+
+## Subsection 1
+
+[Text]
+
+### Sub^2section 1
+
+
