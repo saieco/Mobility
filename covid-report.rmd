@@ -78,7 +78,7 @@ covid1 %>%
                total_cases >= 100) |
               location == 'China' ) %>%
    ggplot(aes(x = date, y = total_cases/1000, color = continent)) +
-   geom_line(size = 2) +
+   geom_line() +
    facet_wrap(~fct_reorder(location,max_cases, .desc = TRUE), scales = 'free_y', nrow = 7, ncol = 4)
    NULL
 
