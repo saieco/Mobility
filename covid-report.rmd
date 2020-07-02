@@ -66,14 +66,14 @@ covid1 <- covid_data %>%
 
 ## Total cases
 
+[Text]
+
 ```{r}
 
-graph_coun <- covid1 %>% 
+covid1 %>% 
    ggplot(aes(x = date, y = total_cases/1000, color = continent)) +
    geom_line() +
    NULL
-
-print(graph_coun)
 
 ```
 
