@@ -1,7 +1,7 @@
 ---
 title: <center>COVID-19 Report</center>
 author: <center>SAI Law & Economics</center>
-date: <center>`r Sys.setlocale('LC_TIME','English'); format(Sys.time(),'%d %B, %Y')`</center>
+date: <center>`r Sys.setlocale('LC_TIME','English'); format(Sys.time(),'%B %d, %Y')`</center>
 output:
    html_document:
       toc: true
@@ -35,9 +35,9 @@ colors_pal <- c('#004170','#098d9c','#cc003a','#b2d600','#ffcc00','#00c954','#00
 
 Sources:
 
-* Our World in Data. Data collected, aggregated, and documented by Diana Beltekian, Daniel Gavrilov, Charlie Giattino, Joe Hasell, Bobbie Macdonald, Edouard Mathieu, Esteban Ortiz-Ospina, Hannah Ritchie, Max Roser. https://github.com/owid/covid-19-data/tree/master/public/data. Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%d %B, %Y')`.
+* Our World in Data. Data collected, aggregated, and documented by Diana Beltekian, Daniel Gavrilov, Charlie Giattino, Joe Hasell, Bobbie Macdonald, Edouard Mathieu, Esteban Ortiz-Ospina, Hannah Ritchie, Max Roser. https://github.com/owid/covid-19-data/tree/master/public/data. Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
 
-* Google LLC "Google COVID-19 Community Mobility Reports". https://www.google.com/covid19/mobility/ Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%d %B, %Y')`.
+* Google LLC "Google COVID-19 Community Mobility Reports". https://www.google.com/covid19/mobility/ Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
 
 # Intro
 
