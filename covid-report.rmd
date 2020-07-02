@@ -71,8 +71,10 @@ covid1 <- covid_data %>%
 ```{r}
 
 covid1 %>% 
+   filter(max_cases_per_million>1000 & max_cases>40000 & population>50000000 & total_cases>100) %>% 
    ggplot(aes(x = date, y = total_cases/1000, color = continent)) +
-   geom_line() +
+      geom_line() +
+      facet_wrap(~location) +
    NULL
 
 ```
