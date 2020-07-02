@@ -29,6 +29,10 @@ mobility_raw_data <- read_csv('inputs/global_mobility_report.csv')
 
 colors_pal <- c('#004170','#098d9c','#cc003a','#b2d600','#ffcc00','#00c954','#00bf9f','#00a9bf','#6f00bf','#b02c88')
 
+##### Dummy function #####
+
+do_nothing <- function(df) { return(df) }
+
 ```
 
 <br>
@@ -44,6 +48,19 @@ Sources:
 [Text]
 
 # COVID-19 
+
+```{r data_frame}
+
+covid1 <- covid_data %>% 
+   arrange(location,date) %>%
+   mutate(max_cases = max(total_cases, na.rm = TRUE),
+          max_deaths = max(total_deaths, na.rm = TRUE),
+          max_cases_per_million = max(total_cases_per_million, na.rm = TRUE),
+          max_deaths_per_million = max(total_deaths, na.rm = TRUE)) %>% 
+   filter(location != 'World') %>%
+   do_nothing()
+
+```
 
 [Text]
 
