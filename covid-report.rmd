@@ -51,13 +51,14 @@ Sources:
 
 ```{r data_frame}
 
-covid1 <- covid_data %>% 
-   arrange(location,date) %>%
-   mutate(max_cases = max(total_cases, na.rm = TRUE),
-          max_deaths = max(total_deaths, na.rm = TRUE),
-          max_cases_per_million = max(total_cases_per_million, na.rm = TRUE),
-          max_deaths_per_million = max(total_deaths, na.rm = TRUE)) %>% 
-   filter(location != 'World') %>%
+covid1 <- covid_data %>%
+   arrange(location,date) %>% 
+   group_by(location) %>%
+   mutate(max_cases = max(total_cases,na.rm = TRUE),
+          max_deaths = max(total_deaths,na.rm = TRUE),
+          max_cases_per_million = max(total_cases_per_million,na.rm = TRUE),
+          max_deaths_per_million = max(total_deaths_per_million,na.rm = TRUE)) %>%
+   filter(location != 'World') %>% 
    do_nothing()
 
 ```
@@ -71,10 +72,14 @@ covid1 <- covid_data %>%
 ```{r}
 
 covid1 %>% 
-   filter(max_cases_per_million>1000 & max_cases>40000 & population>50000000 & total_cases>100) %>% 
+   filter( (max(total_cases_per_million,na.rm = TRUE) > 1000 &
+               max_cases > 40000 &
+               population > 5000000 &
+               total_cases >= 100) |
+              location == 'China' ) %>%
    ggplot(aes(x = date, y = total_cases/1000, color = continent)) +
-   geom_line() +
-   facet_wrap(~location) +
+   geom_line(size = 2) +
+   facet_wrap(~fct_reorder(location,max_cases, .desc = TRUE), scales = 'free_y', nrow = 7, ncol = 4)
    NULL
 
 ```
