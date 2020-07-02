@@ -13,21 +13,29 @@ output:
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE)
+##### R Markdown global options #####
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE, fig.align = 'center', out.width = '100%')
 
 ##### libraries #####
 
 library(tidyverse)
+library(plotly)
+library(extrafont)
+library(mgcv)
+loadfonts(device = 'win') # The first time you install this package, you have to execute font_import()
 
 ##### data import #####
 
-covid_data <- read_csv('inputs/owid-covid-data.csv')
-
 mobility_raw_data <- read_csv('inputs/global_mobility_report.csv')
+
+covid_data <- read_csv('inputs/owid-covid-data.csv')
 
 ##### Colors #####
 
 colors_pal <- c('#004170','#098d9c','#cc003a','#b2d600','#ffcc00','#00c954','#00bf9f','#00a9bf','#6f00bf','#b02c88')
+
+colors_continent <- sample(colors_pal,6,replace = FALSE)
 
 ##### Dummy function #####
 
@@ -69,10 +77,10 @@ covid1 <- covid_data %>%
 
 [Text]
 
-```{r Total_cases, fig.height=8}
+```{r total_cases_by_country_plot, fig.height=8}
 
 covid1 %>% 
-   filter( (max(total_cases_per_million,na.rm = TRUE) > 1000 &
+   filter( (max_cases_per_million > 1000 &
                max_cases > 40000 &
                population > 5000000 &
                total_cases >= 100) |
@@ -81,13 +89,23 @@ covid1 %>%
    geom_line(size = 2) +
    facet_wrap(~fct_reorder(location,max_cases, .desc = TRUE), scales = 'free_y', nrow = 7, ncol = 4) +
    scale_y_continuous(labels = scales::comma_format(accuracy = 1)) +
-   scale_color_manual(values = colors_pal) +
-   theme(panel.background = element_blank(),
-         panel.grid = element_blank(),
-         axis.ticks = element_blank(),
+   scale_color_manual(values = colors_continent) +
+   theme_minimal() +
+   theme(panel.grid = element_blank(),
+         panel.background = element_rect(fill = '#fafafa', color = 'white'),
+         strip.background = element_rect(fill = '#fafafa', color = 'white'),
+         strip.text = element_text(family = 'Century Gothic', color = '#002126'),
+         legend.position = 'bottom',
          legend.title = element_blank(),
-         legend.position = 'bottom')
-   NULL
+         axis.title.x = element_blank(),
+         axis.text = element_text(family = 'Century Gothic', color = '#002126'),
+         text = element_text(family = 'Century Gothic', color = '#002126'),
+         plot.title = element_text(hjust = 0.5, face = 'bold'),
+         plot.caption = element_text(hjust = 0),
+         NULL) +
+   ylab('Total cases (\'000)\n') +
+   labs(title = 'Total cases\' evolution since the 100th case, by country\n',
+        caption = '* Only countries with more than 40,000 cases, more than 1,000 cases per million habitants,\nand with a total population greater than 5 million people are shown (except for China).\n\nData source: Our World in Data.')
 
 ```
 
