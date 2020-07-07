@@ -109,10 +109,64 @@ covid1 %>%
 
 ```
 
-
 ## Subsection
 
-[Text]
+<br><br>
+
+<center>**Statistics by Country**</center>
+
+<br>
+
+```{r covid_table}
+
+covid1 %>% 
+   filter(date == last(date)) %>% 
+   select(date, location, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million) %>% 
+   arrange(-total_cases) %>% 
+   rename_all(funs(c('Date', 'Country', 'Total Cases', 'Total Cases per Million', 'Total Deaths', 'Total Deaths per Million'))) %>% 
+   DT::datatable(., rownames = FALSE,
+                 filter = 'top',
+                 width = 825,
+                 options = list(pageLength = 20,
+                                scrollX = TRUE,
+                                searching = TRUE,
+                                lengthMenu = c(10,20,30,40,50),
+                                columnDefs = list(list(className = 'dt-center', targets = 0:5)))) %>% 
+   DT::formatRound(table = ., columns = c('Total Deaths per Million'), digits = 2) %>% 
+   DT::formatCurrency(table = ., columns = c('Total Cases','Total Cases per Million', 'Total Deaths'), currency = '', digits = 0) %>% 
+   DT::formatStyle(0:5, color = '#002126')
+   
+```
+
+```{r}
+
+p <- covid1 %>% 
+   group_by(continent,.add = TRUE) %>% 
+   summarise(total_deaths = max(total_deaths,na.rm = TRUE), .groups = 'keep') %>% 
+   mutate('Total deaths' = round(total_deaths/1000,digits = 1)) %>% 
+   filter(total_deaths > 1000 & !is.na(continent)) %>% 
+   ggplot(aes(x = fct_reorder(location,total_deaths,.desc = TRUE), y = `Total deaths`, fill = continent)) +
+   geom_col() +
+   scale_y_continuous(labels = scales::comma_format(accuracy = 1)) +
+   scale_fill_manual(values = colors_continent) +
+   theme_minimal() +
+   theme(panel.grid = element_blank(),
+         legend.title = element_blank(),
+         axis.title.x = element_blank(),
+         axis.text.x = element_text(angle = 90,vjust = 0),
+         text = element_text(family = 'Century Gothic', color = '#002126'),
+         plot.title = element_text(hjust = 0.5, face = 'bold'),
+         plot.subtitle = element_text(hjust = 0.5, face = 'bold'),
+         plot.caption = element_text(hjust = 0),
+         NULL) +
+   ylab('Total deaths (\'000)\n') +
+   labs(title = 'Total deaths by country\n',
+        caption = '* Only countries with more than 1,000 deaths are shown.\n\nData source: Our World in Data.')
+
+ggplotly(p,tooltip = c('text','y'))
+
+```
+
 
 # Global Mobility
 
