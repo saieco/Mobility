@@ -87,7 +87,7 @@ covid1 %>%
               location == 'China' ) %>%
    ggplot(aes(x = date, y = total_cases/1000, color = continent)) +
    geom_line(size = 2) +
-   facet_wrap(~fct_reorder(location,max_cases, .desc = TRUE), scales = 'free_y', nrow = 7, ncol = 4) +
+   facet_wrap(~fct_reorder(location,max_cases, .desc = TRUE), scales = 'free_y') +
    scale_y_continuous(labels = scales::comma_format(accuracy = 1)) +
    scale_color_manual(values = colors_continent) +
    theme_minimal() +
