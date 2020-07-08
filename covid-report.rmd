@@ -167,15 +167,76 @@ ggplotly(p,tooltip = c('text','y'))
 
 ```
 
-
 # Global Mobility
 
+```{r}
+
+plots_lst <- list()
+
+vars <- set_names(names(select(mobility_raw_data,                            retail_and_recreation_percent_change_from_baseline:residential_percent_change_from_baseline)),
+                  c('Retail and Recreation',
+                    'Grocery and Pharmacy',
+                    'Parks',
+                    'Transit Stations',
+                    'Work Places',
+                    'Residential Activities'))
+
+for (i in names(vars)) {
+
+   plots_lst[[i]] <- covid1 %>%
+      group_by(continent,.add = TRUE) %>%
+      select(continent:new_deaths_per_million, max_cases:max_cases_per_million, population) %>%
+      filter(total_cases >= 100 & population > 10000000) %>%
+      filter(date == min(date) & max_cases_per_million < 10000 & max_cases_per_million > 1000) %>%
+      left_join(select(filter(mobility_raw_data,is.na(sub_region_1)),
+                       country_region,date,8:13),
+                by = c('location' = 'country_region', 'date' = 'date')) %>%
+      filter(across(ends_with('baseline'),~!is.na(.))) %>%
+      ggplot(aes_string(x = vars[[i]], y = 'max_cases_per_million', color = 'continent')) +
+      geom_text(aes(label = location, color = continent, size = max_deaths)) +
+      scale_color_manual(values = colors_continent, name = '') +
+      scale_y_continuous(labels = scales::comma) +
+      scale_size(range = c(1,10), name = 'Current total deaths', labels = scales::comma) +
+      theme_minimal() +
+      theme(panel.grid = element_blank(),
+            text = element_text(family = 'Century Gothic', color = '#002126'),
+            plot.title = element_text(hjust = 0.5, face = 'bold'),
+            plot.subtitle = element_text(hjust = 0.5, face = 'bold'),
+            plot.caption = element_text(hjust = 0),
+            NULL) +
+      ylab('Current total cases per million habitants\n') + xlab(paste0('\n Average decrease in ',i,' mobility\n\n')) +
+      labs(title = paste0('Relation between changes in ', i, ' after\nthe 100th detected case,\nand total cases per million habitants and total deaths\n'),
+           caption = '*Only countries with total cases per million habitants between 1000 and 10,000, and wit a population\ngreater than 1 million people are shown.\n\nData source: Our World in Data & Google Mobility Reports.')
+
+}
+
+# plot <- function(variable){
+#    
+#    # Código para hacer gráfica
+#    
+# }
+# 
+# plots_lst <- map(vars, ~plot(.))
+
+```
+
+
+## Subsection 1 {.tabset .tabset-fade}
+
 [Text]
 
-## Subsection 1
+```{r results='asis'}
 
-[Text]
+for (plot in names(plots_lst)) {
 
-### Sub^2section 1
+   cat('\n')
 
+   cat('### ', plot, '\n')
 
+   print(plots_lst[[plot]])
+
+   cat('\n')
+
+}
+
+```
