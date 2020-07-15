@@ -9,6 +9,7 @@ output:
       toc_float:
          collapse: false
          smooth_scroll: true
+      css: style.css
 ---
 
 ```{r setup, include=FALSE}
@@ -19,17 +20,23 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = 
 
 ##### libraries #####
 
-library(tidyverse)
-library(plotly)
-library(extrafont)
-library(mgcv)
+# Tools' installing tool
+if (!'pacman' %in% installed.packages()) install.packages('pacman')
+
+# Packages broadly used in the script
+pacman::p_load(tidyverse, plotly, extrafont, mgcv)
+
+# Packages not broadly used in the script
+map(c('tidytuesdayR','here'),
+    ~pacman::p_install(., force = FALSE, character.only = TRUE))
+
 loadfonts(device = 'win') # The first time you install this package, you have to execute font_import()
 
 ##### data import #####
 
-mobility_raw_data <- read_csv('inputs/global_mobility_report.csv')
+mobility_raw_data <- read_csv(here::here('inputs','global_mobility_report.csv'))
 
-covid_data <- read_csv('inputs/owid-covid-data.csv')
+covid_data <- read_csv(here::here('inputs','owid-covid-data.csv'))
 
 ##### Colors #####
 
@@ -47,9 +54,9 @@ do_nothing <- function(df) { return(df) }
 
 Sources:
 
-* Our World in Data. Data collected, aggregated, and documented by Diana Beltekian, Daniel Gavrilov, Charlie Giattino, Joe Hasell, Bobbie Macdonald, Edouard Mathieu, Esteban Ortiz-Ospina, Hannah Ritchie, Max Roser. https://github.com/owid/covid-19-data/tree/master/public/data. Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
+* *Our World in Data. Data collected, aggregated, and documented by Diana Beltekian, Daniel Gavrilov, Charlie Giattino, Joe Hasell, Bobbie Macdonald, Edouard Mathieu, Esteban Ortiz-Ospina, Hannah Ritchie, Max Roser.* https://github.com/owid/covid-19-data/tree/master/public/data. Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
 
-* Google LLC "Google COVID-19 Community Mobility Reports". https://www.google.com/covid19/mobility/ Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
+* <span style='color:red; font-style: italic'>Google LLC "Google COVID-19 Community Mobility Reports".</span> https://www.google.com/covid19/mobility/ Accessed: `r Sys.setlocale('LC_TIME','English'); format(Sys.time(), '%B %d, %Y')`.
 
 # Intro
 
@@ -171,7 +178,7 @@ ggplotly(p,tooltip = c('text','y'))
 
 ```{r}
 
-plots_lst <- list()
+# plots_lst <- list()
 
 vars <- set_names(names(select(mobility_raw_data,                            retail_and_recreation_percent_change_from_baseline:residential_percent_change_from_baseline)),
                   c('Retail and Recreation',
@@ -180,10 +187,39 @@ vars <- set_names(names(select(mobility_raw_data,                            ret
                     'Transit Stations',
                     'Work Places',
                     'Residential Activities'))
+vars
+# for (i in names(vars)) {
+# 
+#    plots_lst[[i]] <- covid1 %>%
+#       group_by(continent,.add = TRUE) %>%
+#       select(continent:new_deaths_per_million, max_cases:max_cases_per_million, population) %>%
+#       filter(total_cases >= 100 & population > 10000000) %>%
+#       filter(date == min(date) & max_cases_per_million < 10000 & max_cases_per_million > 1000) %>%
+#       left_join(select(filter(mobility_raw_data,is.na(sub_region_1)),
+#                        country_region,date,8:13),
+#                 by = c('location' = 'country_region', 'date' = 'date')) %>%
+#       filter(across(ends_with('baseline'),~!is.na(.))) %>%
+#       ggplot(aes_string(x = vars[[i]], y = 'max_cases_per_million', color = 'continent')) +
+#       geom_text(aes(label = location, color = continent, size = max_deaths)) +
+#       scale_color_manual(values = colors_continent, name = '') +
+#       scale_y_continuous(labels = scales::comma) +
+#       scale_size(range = c(1,10), name = 'Current total deaths', labels = scales::comma) +
+#       theme_minimal() +
+#       theme(panel.grid = element_blank(),
+#             text = element_text(family = 'Century Gothic', color = '#002126'),
+#             plot.title = element_text(hjust = 0.5, face = 'bold'),
+#             plot.subtitle = element_text(hjust = 0.5, face = 'bold'),
+#             plot.caption = element_text(hjust = 0),
+#             NULL) +
+#       ylab('Current total cases per million habitants\n') + xlab(paste0('\n Average decrease in ',i,' mobility\n\n')) +
+#       labs(title = paste0('Relation between changes in ', i, ' after\nthe 100th detected case,\nand total cases per million habitants and total deaths\n'),
+#            caption = '*Only countries with total cases per million habitants between 1000 and 10,000, and wit a population\ngreater than 1 million people are shown.\n\nData source: Our World in Data & Google Mobility Reports.')
+# 
+# }
 
-for (i in names(vars)) {
+my_plot <- function(variable){
 
-   plots_lst[[i]] <- covid1 %>%
+   p <- covid1 %>%
       group_by(continent,.add = TRUE) %>%
       select(continent:new_deaths_per_million, max_cases:max_cases_per_million, population) %>%
       filter(total_cases >= 100 & population > 10000000) %>%
@@ -192,7 +228,7 @@ for (i in names(vars)) {
                        country_region,date,8:13),
                 by = c('location' = 'country_region', 'date' = 'date')) %>%
       filter(across(ends_with('baseline'),~!is.na(.))) %>%
-      ggplot(aes_string(x = vars[[i]], y = 'max_cases_per_million', color = 'continent')) +
+      ggplot(aes_string(x = vars[[variable]], y = 'max_cases_per_million', color = 'continent')) +
       geom_text(aes(label = location, color = continent, size = max_deaths)) +
       scale_color_manual(values = colors_continent, name = '') +
       scale_y_continuous(labels = scales::comma) +
@@ -204,22 +240,18 @@ for (i in names(vars)) {
             plot.subtitle = element_text(hjust = 0.5, face = 'bold'),
             plot.caption = element_text(hjust = 0),
             NULL) +
-      ylab('Current total cases per million habitants\n') + xlab(paste0('\n Average decrease in ',i,' mobility\n\n')) +
-      labs(title = paste0('Relation between changes in ', i, ' after\nthe 100th detected case,\nand total cases per million habitants and total deaths\n'),
+      ylab('Current total cases per million habitants\n') + xlab(paste0('\n Average decrease in ',variable,' mobility\n\n')) +
+      labs(title = paste0('Relation between changes in ', variable, ' after\nthe 100th detected case,\nand total cases per million habitants and total deaths\n'),
            caption = '*Only countries with total cases per million habitants between 1000 and 10,000, and wit a population\ngreater than 1 million people are shown.\n\nData source: Our World in Data & Google Mobility Reports.')
+   
+   return(p)
 
 }
 
-# plot <- function(variable){
-#    
-#    # Código para hacer gráfica
-#    
-# }
-# 
-# plots_lst <- map(vars, ~plot(.))
+plots_lst <- map(names(vars), ~my_plot(.))
+names(plots_lst) <- names(vars)
 
 ```
-
 
 ## Subsection 1 {.tabset .tabset-fade}
 
@@ -240,3 +272,6 @@ for (plot in names(plots_lst)) {
 }
 
 ```
+
+
+
